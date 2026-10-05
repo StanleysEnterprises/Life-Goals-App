@@ -47,9 +47,11 @@ export default function GoalItem({ goal, person, day = todayKey(), editing = fal
       setPop(true)
       navigator.vibrate?.(12)
       setTimeout(() => setPop(false), 700)
-      if (completesSomething()) {
-        const r = circle.current?.getBoundingClientRect()
-        if (r) setTimeout(() => burst(r.left + r.width / 2, r.top + r.height / 2), 120)
+      // Every tick gets a sprinkle; the big moments get the full burst
+      const r = circle.current?.getBoundingClientRect()
+      if (r) {
+        const kind = completesSomething() ? 'big' : 'mini'
+        setTimeout(() => burst(r.left + r.width / 2, r.top + r.height / 2, kind), 80)
       }
     }
     toggle(goal, person, day)
