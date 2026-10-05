@@ -2,8 +2,13 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { createClient } from '@supabase/supabase-js'
 import { todayKey } from './dates'
 
-const url = import.meta.env.VITE_SUPABASE_URL
-const key = import.meta.env.VITE_SUPABASE_ANON_KEY
+// Accepts our own VITE_ names or the NEXT_PUBLIC_ names the Vercel ↔ Supabase integration creates
+const env = import.meta.env
+const url = env.VITE_SUPABASE_URL || env.NEXT_PUBLIC_SUPABASE_URL
+const key =
+  env.VITE_SUPABASE_ANON_KEY ||
+  env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 export const supabase = url && key ? createClient(url, key) : null
 
 const TABLES = ['goals', 'completions', 'notes']
