@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useStore } from '../lib/store'
 import { doneOnDay, isComplete, weekCount } from '../lib/stats'
-import { categoryLabel } from '../lib/constants'
+import { category } from '../lib/constants'
 import { fmt, todayKey } from '../lib/dates'
 import { CloseIcon } from './Icons'
 
@@ -23,7 +23,7 @@ function Dots({ count, target }) {
       {Array.from({ length: target }, (_, i) => (
         <span
           key={i}
-          className={`h-1.5 w-1.5 rounded-full transition-colors duration-500 ${i < count ? 'bg-sage' : 'bg-taupe/40'}`}
+          className={`h-1.5 w-1.5 rounded-full transition-colors duration-500 ${i < count ? 'bg-blue' : 'bg-line'}`}
         />
       ))}
     </span>
@@ -49,7 +49,8 @@ export default function GoalItem({ goal, person, day = todayKey(), editing = fal
     toggle(goal, person, day)
   }
 
-  let meta = categoryLabel(goal.category)
+  const cat = category(goal.category)
+  let meta = cat.label
   if (goal.type === 'weekly') meta = `${Math.min(count, target)} of ${target} this week`
   if (goal.type === 'milestone') meta = goal.due_date ? `By ${fmt(goal.due_date, { day: 'numeric', month: 'short' })}` : 'Milestone'
 
@@ -57,7 +58,7 @@ export default function GoalItem({ goal, person, day = todayKey(), editing = fal
     <li className={`list-none ${complete ? 'is-done' : ''}`}>
       <div
         className={`flex items-center gap-3 rounded-2xl border transition-all duration-500 ease-calm ${
-          complete ? 'border-sage/25 bg-sage/10' : 'border-taupe/30 bg-canvas'
+          complete ? 'border-blue/60 bg-blue-soft' : 'border-line bg-surface'
         }`}
       >
         <button
@@ -70,10 +71,10 @@ export default function GoalItem({ goal, person, day = todayKey(), editing = fal
               <span className="strike">{goal.title}</span>
             </span>
             <span className="mt-1 flex items-center gap-2 text-xs text-ink-soft">
-              {goal.type === 'weekly' && <Dots count={count} target={target} />}
+              {goal.type === 'weekly' ? <Dots count={count} target={target} /> : <span className={`h-2 w-2 rounded-full ${cat.dot}`} />}
               {meta}
               {goal.owner === 'both' && (
-                <span className="rounded-full bg-sand px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-ink-soft">
+                <span className="rounded-full bg-pink-soft px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-ink">
                   Both
                 </span>
               )}
@@ -84,7 +85,7 @@ export default function GoalItem({ goal, person, day = todayKey(), editing = fal
           <button
             onClick={() => archiveGoal(goal.id)}
             aria-label={`Remove ${goal.title}`}
-            className="mr-3 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-sand text-ink-soft transition active:scale-90"
+            className="mr-3 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-pink-soft text-ink transition active:scale-90"
           >
             <CloseIcon size={14} />
           </button>

@@ -5,8 +5,9 @@ import { PEOPLE } from '../lib/constants'
 import { ProgressRing, Section } from '../components/ui'
 import { CheckCircle } from '../components/GoalItem'
 import { WinsJournal } from './Progress'
+import { PERSON_HEX, THEME } from '../lib/theme'
 
-const COLORS = { tegan: '#5D866C', will: '#C2A68C' }
+const COLORS = PERSON_HEX
 const IDS = ['tegan', 'will']
 
 export default function Compare() {
@@ -34,21 +35,21 @@ export default function Compare() {
     <div className="space-y-9">
       <section className="pt-3 text-center">
         <div className="eyebrow">Tegan &amp; Will</div>
-        <h1 className="mt-1 font-display text-[34px] font-light text-ink">Side by side</h1>
+        <h1 className="mt-1 font-display text-[34px] font-semibold text-ink">Side by <span className="highlight" style={{ '--hl': '#FFC4D2' }}>side</span></h1>
         <p className="mt-1 text-sm text-ink-soft">Shared momentum, not a scoreboard.</p>
       </section>
 
       <section className="grid grid-cols-2 gap-3">
         {people.map((p) => (
-          <div key={p.id} className="card flex flex-col items-center px-3 text-center">
-            <div className="flex items-center gap-2 font-display text-xl text-ink">
+          <div key={p.id} className={`flex flex-col items-center rounded-3xl p-5 px-3 text-center ${PEOPLE[p.id].soft}`}>
+            <div className="flex items-center gap-2 font-display text-xl font-semibold text-ink">
               <span className="h-2 w-2 rounded-full" style={{ background: COLORS[p.id] }} />
               {PEOPLE[p.id].name}
             </div>
             <div className="mt-4">
-              <ProgressRing value={p.today} size={96} stroke={7} color={COLORS[p.id]} track="#F5F5F0">
+              <ProgressRing value={p.today} size={96} stroke={7} color={COLORS[p.id]} track={THEME.canvas}>
                 <div>
-                  <div className="font-display text-2xl text-ink">{pct(p.today)}</div>
+                  <div className="font-display text-2xl font-semibold text-ink">{pct(p.today)}</div>
                   <div className="text-[10px] text-ink-soft">today</div>
                 </div>
               </ProgressRing>
@@ -78,14 +79,14 @@ export default function Compare() {
         <div className="card grid grid-cols-7 gap-1 px-3">
           {weekDays(today).map((d) => (
             <div key={d} className="flex flex-col items-center gap-2">
-              <span className={`text-[11px] font-semibold ${d === today ? 'text-sage' : 'text-ink-soft'}`}>
+              <span className={`text-[11px] font-semibold ${d === today ? 'text-blue-deep' : 'text-ink-soft'}`}>
                 {fmt(d, { weekday: 'narrow' })}
               </span>
               <div className="flex h-20 items-end gap-1">
                 {IDS.map((id) => {
                   const r = d <= today ? dailyRatio(goals, completions, id, d) : null
                   return (
-                    <span key={id} className="relative h-full w-2.5 overflow-hidden rounded-full bg-canvas">
+                    <span key={id} className="relative h-full w-2.5 overflow-hidden rounded-full bg-line/60">
                       <span
                         className="absolute inset-x-0 bottom-0 rounded-full transition-all duration-1000 ease-calm"
                         style={{ height: `${(r ?? 0) * 100}%`, background: COLORS[id] }}
@@ -101,13 +102,13 @@ export default function Compare() {
 
       <Section title="Shared goals">
         {shared.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-taupe/45 px-5 py-6 text-center text-sm text-ink-soft">
+          <p className="rounded-2xl border border-dashed border-ink-soft/25 px-5 py-6 text-center text-sm text-ink-soft">
             Add a goal for “Both” and you’ll see each other’s progress on it here.
           </p>
         ) : (
           <ul className="space-y-2.5">
             {shared.map((g) => (
-              <li key={g.id} className="flex items-center gap-3 rounded-2xl border border-taupe/30 bg-canvas px-4 py-3.5">
+              <li key={g.id} className="flex items-center gap-3 rounded-2xl border border-line bg-surface px-4 py-3.5">
                 <span className="min-w-0 flex-1 truncate text-[15px] font-medium text-ink">{g.title}</span>
                 {IDS.map((id) => (
                   <span key={id} className="flex flex-col items-center gap-0.5">
@@ -132,9 +133,9 @@ export default function Compare() {
 
 function Row({ label, value }) {
   return (
-    <div className="flex items-baseline justify-between border-t border-taupe/25 pt-2.5">
+    <div className="flex items-baseline justify-between border-t border-ink/10 pt-2.5">
       <dt className="text-xs text-ink-soft">{label}</dt>
-      <dd className="font-display text-lg leading-none text-ink">{value}</dd>
+      <dd className="font-display text-lg font-semibold leading-none text-ink">{value}</dd>
     </div>
   )
 }

@@ -22,7 +22,7 @@ export default function Notes({ person }) {
     <div className="space-y-8">
       <section className="pt-3">
         <div className="eyebrow">{PEOPLE[person].name}’s</div>
-        <h1 className="mt-1 font-display text-[34px] font-light text-ink">Notes</h1>
+        <h1 className="mt-1 font-display text-[34px] font-semibold text-ink"><span className="highlight" style={{ '--hl': '#FFC4D2' }}>Notes</span></h1>
         <p className="mt-1 text-sm text-ink-soft">Thoughts, reflections, small things worth keeping.</p>
       </section>
 
@@ -38,7 +38,7 @@ export default function Notes({ person }) {
           <button
             onClick={save}
             disabled={!draft.trim()}
-            className="rounded-full bg-sage px-5 py-2 text-sm font-semibold text-canvas transition active:scale-95 disabled:opacity-35"
+            className="rounded-full bg-yellow px-5 py-2 text-sm font-bold text-ink transition active:scale-95 disabled:opacity-35"
           >
             Save note
           </button>
@@ -50,7 +50,7 @@ export default function Notes({ person }) {
       ) : (
         <ul className="space-y-3">
           {notes.map((n) => (
-            <li key={n.id} className="group animate-rise rounded-2xl border border-taupe/30 bg-canvas px-4 py-4">
+            <li key={n.id} className="group animate-rise rounded-2xl border border-line bg-surface px-4 py-4">
               <div className="flex items-start justify-between gap-3">
                 <span className="eyebrow">
                   {relativeDay(n.day)} ·{' '}
@@ -59,7 +59,7 @@ export default function Notes({ person }) {
                 <button
                   onClick={() => removeNote(n.id)}
                   aria-label="Delete note"
-                  className="-mr-1 -mt-1 grid h-7 w-7 place-items-center rounded-full text-ink-soft/60 transition active:scale-90 active:bg-sand"
+                  className="-mr-1 -mt-1 grid h-7 w-7 place-items-center rounded-full text-ink-soft/60 transition active:scale-90 active:bg-line/70"
                 >
                   <CloseIcon size={13} />
                 </button>

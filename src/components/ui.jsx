@@ -1,4 +1,5 @@
 import { useStore } from '../lib/store'
+import { THEME } from '../lib/theme'
 
 export function Section({ title, aside, children, className = '' }) {
   return (
@@ -18,7 +19,7 @@ export function Chip({ active, onClick, children }) {
       type="button"
       onClick={onClick}
       className={`whitespace-nowrap rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition duration-300 ease-calm active:scale-95 ${
-        active ? 'border-sage bg-sage text-canvas' : 'border-taupe/40 bg-canvas text-ink-soft'
+        active ? 'border-ink bg-ink text-canvas' : 'border-line bg-surface text-ink-soft'
       }`}
     >
       {children}
@@ -26,7 +27,7 @@ export function Chip({ active, onClick, children }) {
   )
 }
 
-export function ProgressRing({ value, size = 120, stroke = 8, color = '#5D866C', track = '#E6D8C3', children }) {
+export function ProgressRing({ value, size = 120, stroke = 8, color = THEME.blue, track = THEME.yellowSoft, children }) {
   const r = (size - stroke) / 2
   const c = 2 * Math.PI * r
   const v = Math.max(0, Math.min(1, value ?? 0))
@@ -54,13 +55,13 @@ export function ProgressRing({ value, size = 120, stroke = 8, color = '#5D866C',
 
 export function EmptyState({ title, body, action, onAction }) {
   return (
-    <div className="rounded-3xl border border-dashed border-taupe/50 px-6 py-10 text-center">
-      <p className="font-display text-xl text-ink">{title}</p>
+    <div className="rounded-3xl border border-dashed border-ink-soft/25 px-6 py-10 text-center">
+      <p className="font-display text-xl font-semibold text-ink">{title}</p>
       <p className="mx-auto mt-2 max-w-[260px] text-sm leading-relaxed text-ink-soft">{body}</p>
       {action && (
         <button
           onClick={onAction}
-          className="mt-5 rounded-full bg-sage px-5 py-2.5 text-sm font-semibold text-canvas transition active:scale-95"
+          className="mt-5 rounded-full bg-yellow px-5 py-2.5 text-sm font-bold text-ink transition active:scale-95"
         >
           {action}
         </button>
@@ -70,10 +71,10 @@ export function EmptyState({ title, body, action, onAction }) {
 }
 
 const STATUS = {
-  live: ['bg-sage', 'Synced'],
-  connecting: ['bg-taupe animate-pulse', 'Connecting'],
-  local: ['bg-taupe', 'This phone only'],
-  error: ['bg-taupe', 'Offline'],
+  live: ['bg-mint', 'Synced'],
+  connecting: ['bg-line animate-pulse', 'Connecting'],
+  local: ['bg-yellow', 'This phone only'],
+  error: ['bg-pink', 'Offline'],
 }
 
 export function SyncStatus() {
@@ -90,7 +91,7 @@ export function SyncStatus() {
 export function Stat({ label, value, sub }) {
   return (
     <div>
-      <div className="font-display text-2xl leading-none text-ink">{value}</div>
+      <div className="font-display text-2xl font-semibold leading-none text-ink">{value}</div>
       <div className="mt-1.5 text-xs text-ink-soft">{label}</div>
       {sub && <div className="text-[11px] text-ink-soft/70">{sub}</div>}
     </div>

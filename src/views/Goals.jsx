@@ -18,12 +18,12 @@ export default function Goals({ person, onAdd }) {
       <section className="flex items-end justify-between pt-3">
         <div>
           <div className="eyebrow">{PEOPLE[person].name}’s</div>
-          <h1 className="mt-1 font-display text-[34px] font-light text-ink">Goals</h1>
+          <h1 className="mt-1 font-display text-[34px] font-semibold text-ink"><span className="highlight" style={{ '--hl': '#9FD0F5' }}>Goals</span></h1>
         </div>
         {total > 0 && (
           <button
             onClick={() => setEditing((e) => !e)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${editing ? 'bg-sage text-canvas' : 'bg-sand text-ink'}`}
+            className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${editing ? 'bg-ink text-canvas' : 'bg-blue-soft text-ink'}`}
           >
             {editing ? 'Done' : 'Edit'}
           </button>

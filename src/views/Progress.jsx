@@ -3,6 +3,7 @@ import { activeGoalsFor, dailyRatio, pct, quietWins, streak, weekConsistency, we
 import { fmt, lastDays, relativeDay, todayKey, weekDays } from '../lib/dates'
 import { PEOPLE } from '../lib/constants'
 import { ProgressRing, Section, Stat } from '../components/ui'
+import { heat } from '../lib/theme'
 
 export default function Progress({ person }) {
   const { data } = useStore()
@@ -19,14 +20,14 @@ export default function Progress({ person }) {
     <div className="space-y-9">
       <section className="pt-3">
         <div className="eyebrow">{PEOPLE[person].name}’s</div>
-        <h1 className="mt-1 font-display text-[34px] font-light text-ink">Progress</h1>
+        <h1 className="mt-1 font-display text-[34px] font-semibold text-ink"><span className="highlight" style={{ '--hl': '#B7E5CD' }}>Progress</span></h1>
         <p className="mt-1 text-sm text-ink-soft">Consistency over intensity.</p>
       </section>
 
-      <section className="card flex items-center gap-6">
+      <section className="card flex items-center gap-6 shadow-soft">
         <ProgressRing value={todayRatio} size={116}>
           <div>
-            <div className="font-display text-3xl text-ink">{pct(todayRatio)}</div>
+            <div className="font-display text-3xl font-semibold text-ink">{pct(todayRatio)}</div>
             <div className="text-[11px] text-ink-soft">today</div>
           </div>
         </ProgressRing>
@@ -59,9 +60,9 @@ export default function Progress({ person }) {
                       {Math.min(n, t)}/{t}
                     </span>
                   </div>
-                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-sand">
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-yellow-soft">
                     <div
-                      className="h-full rounded-full bg-sage transition-all duration-1000 ease-calm"
+                      className="h-full rounded-full bg-blue transition-all duration-1000 ease-calm"
                       style={{ width: `${Math.min(1, n / t) * 100}%` }}
                     />
                   </div>
@@ -88,16 +89,16 @@ export function WeekStrip({ person }) {
         const r = d <= today ? dailyRatio(data.goals, data.completions, person, d) : null
         return (
           <div key={d} className="flex flex-col items-center gap-2">
-            <span className={`text-[11px] font-semibold ${d === today ? 'text-sage' : 'text-ink-soft'}`}>
+            <span className={`text-[11px] font-semibold ${d === today ? 'text-blue-deep' : 'text-ink-soft'}`}>
               {fmt(d, { weekday: 'narrow' })}
             </span>
             <span
               className={`relative grid h-9 w-9 place-items-center rounded-full border ${
-                d === today ? 'border-sage' : 'border-taupe/35'
+                d === today ? 'border-blue' : 'border-line'
               } ${d > today ? 'border-dashed' : ''}`}
             >
               <span
-                className="absolute inset-1 rounded-full bg-sage transition-all duration-700 ease-calm"
+                className="absolute inset-1 rounded-full bg-blue transition-all duration-700 ease-calm"
                 style={{ opacity: r ?? 0, transform: `scale(${0.35 + (r ?? 0) * 0.65})` }}
               />
             </span>
@@ -120,16 +121,16 @@ function Mosaic({ person }) {
             <div
               key={d}
               title={`${relativeDay(d)}: ${pct(r)}`}
-              className={`aspect-square rounded-lg ${r === null ? 'bg-sand/50' : ''} ${d === today ? 'ring-1 ring-sage ring-offset-2 ring-offset-canvas' : ''}`}
-              style={r !== null ? { background: `rgba(93,134,108,${0.12 + r * 0.88})` } : undefined}
+              className={`aspect-square rounded-lg ${r === null ? 'bg-surface' : ''} ${d === today ? 'ring-1 ring-blue-deep ring-offset-2 ring-offset-canvas' : ''}`}
+              style={r !== null ? { background: heat(r) } : undefined}
             />
           )
         })}
       </div>
       <div className="mt-3 flex items-center justify-end gap-1.5 text-[11px] text-ink-soft">
         Less
-        {[0.12, 0.4, 0.7, 1].map((o) => (
-          <span key={o} className="h-2.5 w-2.5 rounded-[3px]" style={{ background: `rgba(93,134,108,${o})` }} />
+        {[0, 0.35, 0.7, 1].map((o) => (
+          <span key={o} className="h-2.5 w-2.5 rounded-[3px]" style={{ background: heat(o) }} />
         ))}
         More
       </div>
@@ -140,24 +141,24 @@ function Mosaic({ person }) {
 export function WinsJournal({ wins, showPerson = false }) {
   if (!wins.length)
     return (
-      <p className="rounded-2xl border border-dashed border-taupe/45 px-5 py-6 text-center text-sm text-ink-soft">
+      <p className="rounded-2xl border border-dashed border-ink-soft/25 px-5 py-6 text-center text-sm text-ink-soft">
         Finished milestones and full days will gather here, like a journal.
       </p>
     )
   return (
-    <ol className="relative space-y-4 border-l border-taupe/35 pl-5">
+    <ol className="relative space-y-4 border-l border-line pl-5">
       {wins.map((w) => (
         <li key={w.id} className="relative">
           <span
             className={`absolute -left-[25px] top-1.5 h-2 w-2 rounded-full ring-4 ring-canvas ${
-              w.kind === 'milestone' ? 'bg-sage' : 'bg-taupe'
+              w.kind === 'milestone' ? 'bg-pink' : w.kind === 'weekly' ? 'bg-blue' : 'bg-yellow'
             }`}
           />
           <div className="text-[11px] uppercase tracking-wider text-ink-soft">
             {relativeDay(w.day)}
             {showPerson && ` · ${PEOPLE[w.person].name}`}
           </div>
-          <div className={`mt-0.5 text-[15px] ${w.kind === 'milestone' ? 'font-display text-lg text-ink' : 'text-ink'}`}>
+          <div className={`mt-0.5 text-[15px] ${w.kind === 'milestone' ? 'font-display text-lg font-semibold text-ink' : 'text-ink'}`}>
             {w.text}
           </div>
         </li>

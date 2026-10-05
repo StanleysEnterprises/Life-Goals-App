@@ -4,6 +4,7 @@ import { activeGoalsFor, isComplete } from '../lib/stats'
 import { fmt, greeting, todayKey } from '../lib/dates'
 import { promptFor, quoteFor } from '../lib/inspiration'
 import { PEOPLE } from '../lib/constants'
+import { PERSON_HEX } from '../lib/theme'
 import GoalItem from '../components/GoalItem'
 import { EmptyState, Section, SyncStatus } from '../components/ui'
 
@@ -29,9 +30,9 @@ export default function Today({ person, onAdd }) {
           <span>{fmt(day, { weekday: 'long', day: 'numeric', month: 'long' })}</span>
           <SyncStatus />
         </div>
-        <h1 className="mt-2 font-display text-[38px] font-light leading-tight text-ink">
+        <h1 className="mt-2 font-display text-[38px] font-semibold leading-[1.1] tracking-tight text-ink">
           {greeting()},<br />
-          <span className="italic">{PEOPLE[person].name}</span>
+          <span className="highlight" style={{ '--hl': PERSON_HEX[person] }}>{PEOPLE[person].name}</span>
         </h1>
 
         {dailies.length > 0 && (
@@ -42,9 +43,9 @@ export default function Today({ person, onAdd }) {
                 {done} of {dailies.length}
               </span>
             </div>
-            <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-sand">
+            <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-yellow-soft">
               <div
-                className="h-full rounded-full bg-sage transition-all duration-1000 ease-calm"
+                className="h-full rounded-full bg-blue transition-all duration-1000 ease-calm"
                 style={{ width: `${(done / dailies.length) * 100}%` }}
               />
             </div>
@@ -91,12 +92,12 @@ export default function Today({ person, onAdd }) {
         </Section>
       )}
 
-      <figure className="card relative overflow-hidden">
-        <span aria-hidden className="absolute -right-2 -top-6 font-display text-[120px] leading-none text-taupe/25">
+      <figure className="relative overflow-hidden rounded-3xl bg-yellow-soft p-5">
+        <span aria-hidden className="absolute right-5 top-3 font-display text-[64px] font-bold leading-none text-yellow">
           “
         </span>
         <div className="eyebrow">Today’s words</div>
-        <blockquote className="relative mt-3 font-display text-[21px] font-light italic leading-snug text-ink">
+        <blockquote className="relative mt-3 font-display text-[21px] font-medium leading-snug tracking-tight text-ink">
           {quote.text}
         </blockquote>
         <figcaption className="mt-3 text-sm text-ink-soft">— {quote.by}</figcaption>
@@ -128,13 +129,13 @@ function Intention({ person, day }) {
   }
 
   return (
-    <section className="rounded-3xl border border-sage/20 bg-sage/[0.07] p-5">
-      <div className="eyebrow text-sage">Inspiration</div>
-      <p className="mt-2 font-display text-xl leading-snug text-ink">{promptFor(day, person)}</p>
+    <section className="rounded-3xl bg-blue-soft p-5">
+      <div className="eyebrow text-blue-deep">Inspiration</div>
+      <p className="mt-2 font-display text-xl font-semibold leading-snug tracking-tight text-ink">{promptFor(day, person)}</p>
       <label className="mt-4 block">
         <span className="flex items-center justify-between text-xs text-ink-soft">
           Your intention for today
-          <span className={`text-sage transition-opacity duration-500 ${justSaved ? 'opacity-100' : 'opacity-0'}`}>Saved</span>
+          <span className={`text-blue-deep transition-opacity duration-500 ${justSaved ? 'opacity-100' : 'opacity-0'}`}>Saved</span>
         </span>
         <textarea
           value={draft}

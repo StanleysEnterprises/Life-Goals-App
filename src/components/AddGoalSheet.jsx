@@ -57,8 +57,8 @@ export default function AddGoalSheet({ open, person, onClose }) {
           open ? 'translate-y-0' : 'translate-y-full'
         }`}
       >
-        <div className="mx-auto mb-5 h-1 w-10 rounded-full bg-taupe/50" />
-        <h2 className="font-display text-2xl text-ink">A new goal</h2>
+        <div className="mx-auto mb-5 h-1 w-10 rounded-full bg-line" />
+        <h2 className="font-display text-2xl font-semibold text-ink">A new goal</h2>
 
         <input
           ref={input}
@@ -112,7 +112,7 @@ export default function AddGoalSheet({ open, person, onClose }) {
         <button
           type="submit"
           disabled={!title.trim()}
-          className="mt-6 mb-2 w-full rounded-2xl bg-sage py-4 text-[15px] font-semibold text-canvas transition duration-300 active:scale-[0.98] disabled:opacity-40"
+          className="mt-6 mb-2 w-full rounded-2xl bg-yellow py-4 text-[15px] font-bold text-ink transition duration-300 active:scale-[0.98] disabled:opacity-40"
         >
           Add goal
         </button>
@@ -135,7 +135,7 @@ function Stepper({ onClick, children }) {
     <button
       type="button"
       onClick={onClick}
-      className="grid h-9 w-9 place-items-center rounded-full border border-taupe/40 text-lg text-ink transition active:scale-90"
+      className="grid h-9 w-9 place-items-center rounded-full border border-line text-lg text-ink transition active:scale-90"
     >
       {children}
     </button>
