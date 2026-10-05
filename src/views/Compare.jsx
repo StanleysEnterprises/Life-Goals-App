@@ -6,6 +6,7 @@ import { ProgressRing, Section } from '../components/ui'
 import { CheckCircle } from '../components/GoalItem'
 import { WinsJournal } from './Progress'
 import { PERSON_HEX, THEME } from '../lib/theme'
+import { QUESTIONS, findCheckin, parseCheckin } from '../components/Checkin'
 
 const COLORS = PERSON_HEX
 const IDS = ['tegan', 'will']
@@ -28,7 +29,7 @@ export default function Compare() {
     }
   })
 
-  const shared = goals.filter((g) => !g.archived && g.owner === 'both')
+  const shared = goals.filter((g) => !g.archived && !g.retired_on && g.owner === 'both')
   const together = [...people[0].wins, ...people[1].wins].sort((a, b) => b.day.localeCompare(a.day)).slice(0, 8)
 
   return (
@@ -100,6 +101,8 @@ export default function Compare() {
         </div>
       </Section>
 
+      <CheckinsSideBySide notes={data.notes} />
+
       <Section title="Shared goals">
         {shared.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-ink-soft/25 px-5 py-6 text-center text-sm text-ink-soft">
@@ -137,5 +140,41 @@ function Row({ label, value }) {
       <dt className="text-xs text-ink-soft">{label}</dt>
       <dd className="font-display text-lg font-semibold leading-none text-ink">{value}</dd>
     </div>
+  )
+}
+
+function CheckinsSideBySide({ notes }) {
+  const weeks = notes.filter((n) => n.kind === 'checkin').map((n) => n.day)
+  const latest = weeks.sort().at(-1)
+  return (
+    <Section title={latest ? `Weekly check-in · week of ${fmt(latest, { day: 'numeric', month: 'short' })}` : 'Weekly check-in'}>
+      {!latest ? (
+        <p className="rounded-2xl border border-dashed border-ink-soft/25 px-5 py-6 text-center text-sm text-ink-soft">
+          On Sundays you’ll each get a two-question check-in. Your answers show up here side by side.
+        </p>
+      ) : (
+        <div className="grid grid-cols-2 gap-3">
+          {IDS.map((id) => {
+            const a = parseCheckin(findCheckin(notes, id, latest))
+            const empty = !QUESTIONS.some((q) => a[q.id])
+            return (
+              <div key={id} className={`rounded-3xl p-4 ${PEOPLE[id].soft}`}>
+                <div className="font-display text-lg font-semibold text-ink">{PEOPLE[id].name}</div>
+                {empty ? (
+                  <p className="mt-2 text-sm text-ink-soft">Not yet…</p>
+                ) : (
+                  QUESTIONS.map((q) => (
+                    <div key={q.id} className="mt-3">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-ink-soft">{q.id === 'well' ? 'Went well' : 'Next focus'}</div>
+                      <p className="mt-0.5 whitespace-pre-wrap text-sm leading-snug text-ink">{a[q.id] || '—'}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </Section>
   )
 }

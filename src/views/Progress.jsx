@@ -1,11 +1,13 @@
 import { useStore } from '../lib/store'
-import { activeGoalsFor, dailyRatio, pct, quietWins, streak, weekConsistency, weekCount } from '../lib/stats'
-import { fmt, lastDays, relativeDay, todayKey, weekDays } from '../lib/dates'
+import { activeGoalsFor, dailyRatio, goalStreak, pct, quietWins, streak, weekConsistency, weekCount } from '../lib/stats'
+import { fmt, lastDays, monthKey, monthName, relativeDay, todayKey, weekDays } from '../lib/dates'
+import { CheerButton, CheerPills } from '../components/Cheers'
+import { StreakIcon } from '../components/Icons'
 import { PEOPLE } from '../lib/constants'
 import { ProgressRing, Section, Stat } from '../components/ui'
 import { heat, THEME } from '../lib/theme'
 
-export default function Progress({ person }) {
+export default function Progress({ person, onRecap }) {
   const { data } = useStore()
   const { goals, completions } = data
   const today = todayKey()
@@ -15,6 +17,11 @@ export default function Progress({ person }) {
   const wins = quietWins(goals, completions, person)
   const monthWins = wins.filter((w) => w.day.slice(0, 7) === today.slice(0, 7)).length
   const weeklies = activeGoalsFor(goals, person).filter((g) => g.type === 'weekly')
+  const streaks = activeGoalsFor(goals, person)
+    .filter((g) => g.type !== 'milestone')
+    .map((g) => ({ g, n: goalStreak(g, person, completions, today) }))
+    .filter((x) => x.n > 0)
+    .sort((a, b) => b.n - a.n)
 
   return (
     <div className="space-y-9">
@@ -37,6 +44,36 @@ export default function Progress({ person }) {
           <Stat value={monthWins} label={`quiet wins in ${fmt(today, { month: 'long' })}`} />
         </div>
       </section>
+
+      <button
+        onClick={() => onRecap(monthKey(today))}
+        className="flex w-full items-center justify-between rounded-3xl bg-gradient-to-r from-yellow-soft to-blue-soft px-5 py-4 text-left transition active:scale-[0.98]"
+      >
+        <span>
+          <span className="eyebrow">Monthly recap</span>
+          <span className="mt-0.5 block font-display text-lg font-semibold text-ink">{monthName(monthKey(today))} so far</span>
+        </span>
+        <span className="grid h-9 w-9 place-items-center rounded-full bg-yellow text-onaccent">→</span>
+      </button>
+
+      {streaks.length > 0 && (
+        <Section title="Habit streaks">
+          <ul className="space-y-2">
+            {streaks.map(({ g, n }) => (
+              <li key={g.id} className="flex items-center gap-3 rounded-2xl border border-line bg-surface px-4 py-3">
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-yellow-soft text-yellow-deep">
+                  <StreakIcon size={15} />
+                </span>
+                <span className="min-w-0 flex-1 truncate text-[15px] text-ink">{g.title}</span>
+                <span className="font-display text-lg font-semibold text-ink">
+                  {n}
+                  <span className="ml-1 text-xs font-normal text-ink-soft">{g.type === 'weekly' ? (n === 1 ? 'week' : 'weeks') : n === 1 ? 'day' : 'days'}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
 
       <Section title="This week">
         <WeekStrip person={person} />
@@ -158,8 +195,16 @@ export function WinsJournal({ wins, showPerson = false }) {
             {relativeDay(w.day)}
             {showPerson && ` · ${PEOPLE[w.person].name}`}
           </div>
-          <div className={`mt-0.5 text-[15px] ${w.kind === 'milestone' ? 'font-display text-lg font-semibold text-ink' : 'text-ink'}`}>
-            {w.text}
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <div className={`mt-0.5 text-[15px] ${w.kind === 'milestone' ? 'font-display text-lg font-semibold text-ink' : 'text-ink'}`}>
+                {w.text}
+              </div>
+              <div className="mt-1">
+                <CheerPills refId={w.id} />
+              </div>
+            </div>
+            <CheerButton to={w.person} refId={w.id} refText={w.text} className="shrink-0" />
           </div>
         </li>
       ))}

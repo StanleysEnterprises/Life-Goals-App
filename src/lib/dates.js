@@ -50,3 +50,16 @@ export const relativeDay = (k) => {
   if (k === addDays(today, -1)) return 'Yesterday'
   return fmt(k, { weekday: 'short', day: 'numeric', month: 'short' })
 }
+
+// "YYYY-MM" helpers for the monthly recap
+export const monthKey = (k = todayKey()) => k.slice(0, 7)
+export const prevMonth = (m) => {
+  const [y, mo] = m.split('-').map(Number)
+  return mo === 1 ? `${y - 1}-12` : `${y}-${pad(mo - 1)}`
+}
+export const monthDays = (m) => {
+  const [y, mo] = m.split('-').map(Number)
+  const n = new Date(y, mo, 0).getDate()
+  return Array.from({ length: n }, (_, i) => `${m}-${pad(i + 1)}`)
+}
+export const monthName = (m, opts = { month: 'long' }) => fromKey(`${m}-01`).toLocaleDateString('en-AU', opts)

@@ -52,5 +52,5 @@ export function useTheme() {
     return next
   }
 
-  return { mode, dark, cycle }
+  return { mode, setMode, dark, cycle }
 }

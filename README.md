@@ -11,7 +11,7 @@ A calm, shared goal-setting app for two. Mobile-first, installable on iPhone, sy
   - **Today**: greeting, today's rhythm bar, daily habits, weekly targets, upcoming milestones, a daily quote, and an inspiration prompt with your intention for the day
   - **Goals**: all goals grouped by Daily / Weekly / Milestone, filterable by category, with an Edit mode to remove goals
   - **Progress**: today ring, streak, weekly consistency, the week at a glance, a 4-week mosaic, weekly-target bars, and the *Quiet Wins* journal
-  - **Notes**: a simple private journal per person
+  - **Notes**: private notes (only on the owner's phone) and a shared "Us" journal
   - **Compare**: Tegan and Will side by side, with today, this week, streaks, a dual week chart, shared goals and wins together
 - **+ button** adds a goal in two taps: type a title, then tap *Add goal*. Defaults are the current person and a daily habit.
 - Goals for **Both** appear in both tabs. Each person ticks them off separately.
@@ -55,6 +55,15 @@ The little status label on the Today screen will say **Synced** once it's connec
 ## 5. Add to your iPhone home screens
 
 Open the Vercel URL in Safari → Share → **Add to Home Screen**. It opens full screen like an app.
+
+## Update #2 (cheers, check-ins, shared notes, reminders)
+
+1. **Database:** Supabase → SQL Editor → New query → paste `supabase/002_features.sql` → Run.
+2. **Reminders:** Vercel → Project → Settings → Environment Variables → add `VAPID_PRIVATE_KEY` (the private notification key), then redeploy.
+   Optional: add `CRON_SECRET` (any long random string) so only Vercel's scheduler can trigger the 7pm reminder.
+3. **On each phone:** open the app from the Home Screen → tap the round button top-right → Settings → turn on *Evening nudge & cheers*. (iPhone needs iOS 16.4+ and the app added to the Home Screen.)
+
+The evening reminder runs daily at 9:00 UTC (7pm Brisbane) via Vercel Cron (`vercel.json`), from `api/remind.js`. Cheers notify the other phone via `api/push.js`.
 
 ## Security note
 
