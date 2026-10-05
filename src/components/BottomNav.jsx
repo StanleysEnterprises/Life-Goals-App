@@ -14,7 +14,7 @@ export default function BottomNav({ view, onChange, showAdd, onAdd }) {
       <button
         onClick={onAdd}
         aria-label="Add a goal"
-        className={`pointer-events-auto absolute -top-[70px] right-5 grid h-14 w-14 place-items-center rounded-full bg-yellow text-ink shadow-soft ring-4 ring-canvas transition duration-500 ease-bouncy active:scale-90 ${
+        className={`pointer-events-auto absolute -top-[70px] right-5 grid h-14 w-14 place-items-center rounded-full bg-yellow text-onaccent shadow-soft ring-4 ring-canvas transition duration-500 ease-bouncy active:scale-90 ${
           showAdd ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-4 opacity-0'
         }`}
       >

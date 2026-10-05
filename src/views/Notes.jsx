@@ -3,6 +3,7 @@ import { useStore } from '../lib/store'
 import { PEOPLE } from '../lib/constants'
 import { relativeDay } from '../lib/dates'
 import { CloseIcon } from '../components/Icons'
+import { THEME } from '../lib/theme'
 
 export default function Notes({ person }) {
   const { data, addNote, removeNote } = useStore()
@@ -22,7 +23,7 @@ export default function Notes({ person }) {
     <div className="space-y-8">
       <section className="pt-3">
         <div className="eyebrow">{PEOPLE[person].name}’s</div>
-        <h1 className="mt-1 font-display text-[34px] font-semibold text-ink"><span className="highlight" style={{ '--hl': '#FFC4D2' }}>Notes</span></h1>
+        <h1 className="mt-1 font-display text-[34px] font-semibold text-ink"><span className="highlight" style={{ '--hl': THEME.pink }}>Notes</span></h1>
         <p className="mt-1 text-sm text-ink-soft">Thoughts, reflections, small things worth keeping.</p>
       </section>
 
@@ -38,7 +39,7 @@ export default function Notes({ person }) {
           <button
             onClick={save}
             disabled={!draft.trim()}
-            className="rounded-full bg-yellow px-5 py-2 text-sm font-bold text-ink transition active:scale-95 disabled:opacity-35"
+            className="rounded-full bg-yellow px-5 py-2 text-sm font-bold text-onaccent transition active:scale-95 disabled:opacity-35"
           >
             Save note
           </button>

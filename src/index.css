@@ -1,22 +1,25 @@
+@import './theme.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   html {
-    background: theme('colors.canvas');
+    background: rgb(var(--canvas));
     -webkit-tap-highlight-color: transparent;
     -webkit-text-size-adjust: 100%;
   }
   body {
     @apply bg-canvas font-sans text-ink antialiased;
+    transition: background-color 0.6s ease, color 0.6s ease;
     overscroll-behavior-y: none;
   }
   button {
     touch-action: manipulation;
   }
   ::selection {
-    background: theme('colors.yellow.DEFAULT');
+    background: rgb(var(--yellow) / 0.6);
   }
 }
 
@@ -32,25 +35,30 @@
   }
   /* Highlighter-pen swipe behind a word */
   .highlight {
-    background-image: linear-gradient(transparent 58%, var(--hl, theme('colors.yellow.DEFAULT')) 58%, var(--hl, theme('colors.yellow.DEFAULT')) 92%, transparent 92%);
+    --hl-c: var(--hl, rgb(var(--yellow)));
+    background-image: linear-gradient(transparent 58%, var(--hl-c) 58%, var(--hl-c) 92%, transparent 92%);
     padding: 0 0.08em;
+  }
+  /* In the evening the highlight sits lower, like an underline, so light text stays readable */
+  .dark .highlight {
+    background-image: linear-gradient(transparent 80%, var(--hl-c) 80%, var(--hl-c) 96%, transparent 96%);
   }
 }
 
 /* ── The satisfying check-off ───────────────────────────── */
 .check-ring {
-  fill: theme('colors.surface');
-  stroke: #d6d1c4;
+  fill: rgb(var(--surface));
+  stroke: rgb(var(--ring));
   stroke-width: 1.6;
   transition: fill 0.4s cubic-bezier(0.22, 1, 0.36, 1), stroke 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .is-checked .check-ring {
-  fill: theme('colors.blue.DEFAULT');
-  stroke: theme('colors.blue.DEFAULT');
+  fill: rgb(var(--blue));
+  stroke: rgb(var(--blue));
 }
 .check-path {
   fill: none;
-  stroke: theme('colors.ink');
+  stroke: rgb(var(--on-accent));
   stroke-width: 2.4;
   stroke-linecap: round;
   stroke-linejoin: round;

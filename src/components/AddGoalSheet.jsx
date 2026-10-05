@@ -49,11 +49,11 @@ export default function AddGoalSheet({ open, person, onClose }) {
     <div className={`fixed inset-0 z-50 ${open ? '' : 'pointer-events-none'}`} aria-hidden={!open}>
       <div
         onClick={onClose}
-        className={`absolute inset-0 bg-ink/25 backdrop-blur-[2px] transition-opacity duration-500 ${open ? 'opacity-100' : 'opacity-0'}`}
+        className={`absolute inset-0 bg-shade/30 backdrop-blur-[2px] transition-opacity duration-500 ${open ? 'opacity-100' : 'opacity-0'}`}
       />
       <form
         onSubmit={submit}
-        className={`absolute inset-x-0 bottom-0 mx-auto max-w-md rounded-t-[32px] bg-canvas px-5 pt-3 pb-safe shadow-soft transition-transform duration-500 ease-calm ${
+        className={`absolute inset-x-0 bottom-0 mx-auto max-w-md rounded-t-[32px] bg-canvas border-t border-line px-5 pt-3 pb-safe shadow-soft transition-transform duration-500 ease-calm ${
           open ? 'translate-y-0' : 'translate-y-full'
         }`}
       >
@@ -112,7 +112,7 @@ export default function AddGoalSheet({ open, person, onClose }) {
         <button
           type="submit"
           disabled={!title.trim()}
-          className="mt-6 mb-2 w-full rounded-2xl bg-yellow py-4 text-[15px] font-bold text-ink transition duration-300 active:scale-[0.98] disabled:opacity-40"
+          className="mt-6 mb-2 w-full rounded-2xl bg-yellow py-4 text-[15px] font-bold text-onaccent transition duration-300 active:scale-[0.98] disabled:opacity-40"
         >
           Add goal
         </button>

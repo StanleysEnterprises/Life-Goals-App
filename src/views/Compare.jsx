@@ -35,7 +35,7 @@ export default function Compare() {
     <div className="space-y-9">
       <section className="pt-3 text-center">
         <div className="eyebrow">Tegan &amp; Will</div>
-        <h1 className="mt-1 font-display text-[34px] font-semibold text-ink">Side by <span className="highlight" style={{ '--hl': '#FFC4D2' }}>side</span></h1>
+        <h1 className="mt-1 font-display text-[34px] font-semibold text-ink">Side by <span className="highlight" style={{ '--hl': THEME.pink }}>side</span></h1>
         <p className="mt-1 text-sm text-ink-soft">Shared momentum, not a scoreboard.</p>
       </section>
 

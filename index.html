@@ -11,6 +11,16 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" type="image/png" href="/icon-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script>
+      // Apply evening mode before first paint (matches src/lib/useTheme.js)
+      try {
+        var m = localStorage.getItem('tw:theme') || 'auto', h = new Date().getHours();
+        if (m === 'dark' || (m === 'auto' && (h >= 18 || h < 6))) {
+          document.documentElement.classList.add('dark');
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#15182A');
+        }
+      } catch (e) {}
+    </script>
     <title>Tegan &amp; Will</title>
   </head>
   <body>

@@ -1,19 +1,22 @@
-// Raw colour values for SVG/canvas bits Tailwind classes can't reach.
-// Keep in step with tailwind.config.js.
+// Colour references for SVG and inline styles. Values come from src/theme.css,
+// so they switch automatically between light and dark mode.
+const c = (name, a) => (a === undefined ? `rgb(var(--${name}))` : `rgb(var(--${name}) / ${a})`)
+
 export const THEME = {
-  canvas: '#FBFAF6',
-  line: '#ECE8DF',
-  blue: '#9FD0F5',
-  blueSoft: '#E8F4FD',
-  yellow: '#FFE07A',
-  yellowSoft: '#FFF6D1',
-  pink: '#FFC4D2',
-  mint: '#B7E5CD',
-  ink: '#262A3D',
+  canvas: c('canvas'),
+  line: c('line'),
+  blue: c('blue'),
+  yellow: c('yellow'),
+  yellowSoft: c('yellow-soft'),
+  pink: c('pink'),
+  mint: c('mint'),
 }
 
-// Each person's colour (Compare charts, tab dot, highlights)
-export const PERSON_HEX = { tegan: '#FFD45C', will: '#8CC6F2' }
+// Each person's colour (tabs, Compare charts, name highlight)
+export const PERSON_HEX = { tegan: c('tegan'), will: c('will') }
 
-// Heatmap shades (baby blue, light → full)
-export const heat = (r) => `rgba(120,184,236,${0.15 + r * 0.85})`
+// Heatmap shades, light → full
+export const heat = (r) => c('heat', 0.15 + r * 0.85)
+
+// Fixed pastels for confetti (look good on light and dark)
+export const CONFETTI = ['#FFD43B', '#6FB8F0', '#FF9FB8', '#7FD6A8', '#FFE07A', '#9FD0F5']

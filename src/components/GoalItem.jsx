@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useStore } from '../lib/store'
-import { doneOnDay, isComplete, weekCount } from '../lib/stats'
+import { activeGoalsFor, doneOnDay, isComplete, weekCount } from '../lib/stats'
+import { burst } from '../lib/confetti'
 import { category } from '../lib/constants'
 import { fmt, todayKey } from '../lib/dates'
 import { CloseIcon } from './Icons'
@@ -33,6 +34,7 @@ function Dots({ count, target }) {
 export default function GoalItem({ goal, person, day = todayKey(), editing = false }) {
   const { data, toggle, archiveGoal } = useStore()
   const [pop, setPop] = useState(false)
+  const circle = useRef(null)
 
   const complete = isComplete(goal, person, data.completions, day)
   const checked = goal.type === 'weekly' ? doneOnDay(data.completions, goal, person, day) : complete
@@ -45,11 +47,24 @@ export default function GoalItem({ goal, person, day = todayKey(), editing = fal
       setPop(true)
       navigator.vibrate?.(12)
       setTimeout(() => setPop(false), 700)
+      if (completesSomething()) {
+        const r = circle.current?.getBoundingClientRect()
+        if (r) setTimeout(() => burst(r.left + r.width / 2, r.top + r.height / 2), 120)
+      }
     }
     toggle(goal, person, day)
   }
 
   const cat = category(goal.category)
+  // Confetti moments: last daily habit of the day, weekly target reached, milestone done
+  const completesSomething = () => {
+    if (goal.type === 'milestone') return true
+    if (goal.type === 'weekly') return count + 1 === target
+    return activeGoalsFor(data.goals, person)
+      .filter((g) => g.type === 'daily' && g.id !== goal.id)
+      .every((g) => doneOnDay(data.completions, g, person, day))
+  }
+
   let meta = cat.label
   if (goal.type === 'weekly') meta = `${Math.min(count, target)} of ${target} this week`
   if (goal.type === 'milestone') meta = goal.due_date ? `By ${fmt(goal.due_date, { day: 'numeric', month: 'short' })}` : 'Milestone'
@@ -65,7 +80,9 @@ export default function GoalItem({ goal, person, day = todayKey(), editing = fal
           onClick={onTap}
           className="flex min-w-0 flex-1 items-center gap-4 px-4 py-3.5 text-left transition-transform duration-200 ease-calm active:scale-[0.98]"
         >
-          <CheckCircle checked={checked} pop={pop} />
+          <span ref={circle} className="shrink-0">
+            <CheckCircle checked={checked} pop={pop} />
+          </span>
           <span className="min-w-0 flex-1">
             <span className={`block truncate text-[15.5px] font-medium transition-colors duration-500 ${complete ? 'text-ink-soft' : 'text-ink'}`}>
               <span className="strike">{goal.title}</span>

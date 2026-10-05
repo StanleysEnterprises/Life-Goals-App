@@ -1,0 +1,67 @@
+/* ── All app colours live here. Values are "R G B". ── */
+
+:root {
+  /* Daytime — clean white, baby blue, pastel yellow */
+  --canvas: 251 250 246;
+  --surface: 255 255 255;
+  --line: 236 232 223;
+  --ring: 214 209 196; /* empty tick circle */
+
+  --blue: 159 208 245;
+  --blue-soft: 232 244 253;
+  --blue-deep: 61 120 174;
+
+  --yellow: 255 224 122;
+  --yellow-soft: 255 246 209;
+  --yellow-deep: 201 151 14;
+
+  --pink: 255 196 210;
+  --pink-soft: 255 238 242;
+  --mint: 183 229 205;
+  --mint-soft: 233 247 239;
+
+  --ink: 38 42 61;
+  --ink-soft: 107 112 136;
+  --on-accent: 38 42 61;
+  --shade: 38 42 61;
+  --shadow: 38 42 61;
+
+  --tegan: 255 212 92;
+  --will: 140 198 242;
+  --heat: 120 184 236;
+
+  color-scheme: light;
+}
+
+.dark {
+  /* Evening — deep navy, the same pastels glowing a touch brighter */
+  --canvas: 21 24 42;
+  --surface: 30 34 56;
+  --line: 46 51 80;
+  --ring: 72 78 112;
+
+  --blue: 140 198 242;
+  --blue-soft: 32 49 74;
+  --blue-deep: 159 208 245;
+
+  --yellow: 255 217 102;
+  --yellow-soft: 50 45 36;
+  --yellow-deep: 255 217 102;
+
+  --pink: 247 168 188;
+  --pink-soft: 58 38 52;
+  --mint: 147 217 181;
+  --mint-soft: 31 58 48;
+
+  --ink: 242 240 234;
+  --ink-soft: 163 168 191;
+  --on-accent: 30 33 52;
+  --shade: 0 0 0;
+  --shadow: 0 0 0;
+
+  --tegan: 255 212 92;
+  --will: 140 198 242;
+  --heat: 140 198 242;
+
+  color-scheme: dark;
+}

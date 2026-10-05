@@ -31,7 +31,7 @@ export default function PersonTabs({ person, comparing, onSelect }) {
             aria-selected={active}
             onClick={() => onSelect(p)}
             className={`relative z-10 rounded-full py-2.5 font-display text-[18px] font-semibold transition-colors duration-300 ${
-              active || comparing ? 'text-ink' : 'text-ink-soft'
+              active || comparing ? 'text-onaccent' : 'text-ink-soft'
             }`}
           >
             {PEOPLE[p].name}

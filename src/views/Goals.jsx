@@ -3,6 +3,7 @@ import { useStore } from '../lib/store'
 import { activeGoalsFor } from '../lib/stats'
 import { CATEGORIES, PEOPLE, TYPES } from '../lib/constants'
 import GoalItem from '../components/GoalItem'
+import { THEME } from '../lib/theme'
 import { Chip, EmptyState, Section } from '../components/ui'
 
 export default function Goals({ person, onAdd }) {
@@ -18,7 +19,7 @@ export default function Goals({ person, onAdd }) {
       <section className="flex items-end justify-between pt-3">
         <div>
           <div className="eyebrow">{PEOPLE[person].name}’s</div>
-          <h1 className="mt-1 font-display text-[34px] font-semibold text-ink"><span className="highlight" style={{ '--hl': '#9FD0F5' }}>Goals</span></h1>
+          <h1 className="mt-1 font-display text-[34px] font-semibold text-ink"><span className="highlight" style={{ '--hl': THEME.blue }}>Goals</span></h1>
         </div>
         {total > 0 && (
           <button

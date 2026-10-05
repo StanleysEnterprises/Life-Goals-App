@@ -34,18 +34,17 @@ export function ProgressRing({ value, size = 120, stroke = 8, color = THEME.blue
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={track} strokeWidth={stroke} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" style={{ stroke: track }} strokeWidth={stroke} />
         <circle
           cx={size / 2}
           cy={size / 2}
           r={r}
           fill="none"
-          stroke={color}
           strokeWidth={stroke}
           strokeLinecap="round"
           strokeDasharray={c}
           strokeDashoffset={c * (1 - v)}
-          style={{ transition: 'stroke-dashoffset 1s cubic-bezier(.22,1,.36,1)' }}
+          style={{ stroke: color, transition: 'stroke-dashoffset 1s cubic-bezier(.22,1,.36,1)' }}
         />
       </svg>
       <div className="absolute inset-0 grid place-items-center text-center">{children}</div>
@@ -61,7 +60,7 @@ export function EmptyState({ title, body, action, onAction }) {
       {action && (
         <button
           onClick={onAction}
-          className="mt-5 rounded-full bg-yellow px-5 py-2.5 text-sm font-bold text-ink transition active:scale-95"
+          className="mt-5 rounded-full bg-yellow px-5 py-2.5 text-sm font-bold text-onaccent transition active:scale-95"
         >
           {action}
         </button>

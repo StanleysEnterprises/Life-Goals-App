@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import PersonTabs from './components/PersonTabs'
 import BottomNav from './components/BottomNav'
 import AddGoalSheet from './components/AddGoalSheet'
+import ThemeButton from './components/ThemeButton'
 import Today from './views/Today'
 import Goals from './views/Goals'
 import Progress from './views/Progress'
@@ -42,7 +43,12 @@ export default function App() {
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col">
       <header className="sticky top-0 z-20 bg-canvas/85 px-5 pb-3 pt-[calc(env(safe-area-inset-top)+14px)] backdrop-blur-md">
-        <PersonTabs person={person} comparing={comparing} onSelect={selectPerson} />
+        <div className="flex items-center gap-2.5">
+          <div className="flex-1">
+            <PersonTabs person={person} comparing={comparing} onSelect={selectPerson} />
+          </div>
+          <ThemeButton />
+        </div>
       </header>
 
       <main key={`${view}-${person}`} className="flex-1 animate-rise px-5 pb-40 pt-3">

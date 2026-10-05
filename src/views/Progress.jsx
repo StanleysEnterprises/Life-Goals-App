@@ -3,7 +3,7 @@ import { activeGoalsFor, dailyRatio, pct, quietWins, streak, weekConsistency, we
 import { fmt, lastDays, relativeDay, todayKey, weekDays } from '../lib/dates'
 import { PEOPLE } from '../lib/constants'
 import { ProgressRing, Section, Stat } from '../components/ui'
-import { heat } from '../lib/theme'
+import { heat, THEME } from '../lib/theme'
 
 export default function Progress({ person }) {
   const { data } = useStore()
@@ -20,7 +20,7 @@ export default function Progress({ person }) {
     <div className="space-y-9">
       <section className="pt-3">
         <div className="eyebrow">{PEOPLE[person].name}’s</div>
-        <h1 className="mt-1 font-display text-[34px] font-semibold text-ink"><span className="highlight" style={{ '--hl': '#B7E5CD' }}>Progress</span></h1>
+        <h1 className="mt-1 font-display text-[34px] font-semibold text-ink"><span className="highlight" style={{ '--hl': THEME.mint }}>Progress</span></h1>
         <p className="mt-1 text-sm text-ink-soft">Consistency over intensity.</p>
       </section>
 
