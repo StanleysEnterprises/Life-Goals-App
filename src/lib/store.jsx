@@ -78,7 +78,7 @@ export function StoreProvider({ children }) {
       return
     }
     const next = Object.fromEntries(TABLES.map((t, i) => [t, res[i].error ? [] : res[i].data]))
-    const missingColumns = next.goals.length > 0 && !('retired_on' in next.goals[0])
+    const missingColumns = next.goals.length > 0 && !('retired_on' in next.goals[0] && 'time_of_day' in next.goals[0])
     setNeedsUpdate(Boolean(res[CORE.length].error) || missingColumns)
     setData(next)
     setStatus('live')
@@ -160,6 +160,7 @@ export function StoreProvider({ children }) {
           target: null,
           due_date: null,
           retired_on: null,
+          time_of_day: null,
           sort_order: Date.now(),
           ...fields,
         }),

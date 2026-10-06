@@ -3,6 +3,7 @@ import { useStore } from '../lib/store'
 import { CATEGORIES, PEOPLE, TYPES } from '../lib/constants'
 import { Chip } from './ui'
 import Sheet, { SheetRow } from './Sheet'
+import { PERIODS, guessPeriod } from '../lib/timeOfDay'
 
 // Add a new goal, or edit one (pass `goal`)
 export default function GoalSheet({ open, person, goal, onClose }) {
@@ -16,6 +17,8 @@ export default function GoalSheet({ open, person, goal, onClose }) {
   const [due, setDue] = useState('')
   const [category, setCategory] = useState('personal')
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [when, setWhen] = useState(null) // morning | afternoon | evening | anytime
+  const [whenPicked, setWhenPicked] = useState(false) // true once chosen by hand
 
   useEffect(() => {
     if (!open) return
@@ -26,11 +29,25 @@ export default function GoalSheet({ open, person, goal, onClose }) {
     setDue(goal?.due_date ?? '')
     setCategory(goal?.category ?? 'personal')
     setConfirmDelete(false)
+    setWhen(goal?.time_of_day ?? (goal ? guessPeriod(goal.title) : null))
+    setWhenPicked(Boolean(goal?.time_of_day))
     if (!goal) {
       const t = setTimeout(() => input.current?.focus(), 300)
       return () => clearTimeout(t)
     }
   }, [open, person, goal])
+
+  // Guess the time of day from the title as you type, until you pick one yourself
+  const onTitle = (v) => {
+    setTitle(v)
+    if (!whenPicked) setWhen(guessPeriod(v))
+  }
+  const pickWhen = (p) => {
+    setWhen(p)
+    setWhenPicked(true)
+  }
+  const guessed = when && !whenPicked
+  const showWhen = type !== 'milestone'
 
   const pickOwner = (o) => {
     setOwner(o)
@@ -48,6 +65,7 @@ export default function GoalSheet({ open, person, goal, onClose }) {
       category,
       target: type === 'weekly' ? target : null,
       due_date: type === 'milestone' && due ? due : null,
+      time_of_day: type === 'milestone' ? null : when ?? 'anytime',
     }
     if (editing) updateGoal(goal.id, fields)
     else addGoal(fields)
@@ -59,7 +77,7 @@ export default function GoalSheet({ open, person, goal, onClose }) {
       <input
         ref={input}
         value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        onChange={(e) => onTitle(e.target.value)}
         placeholder="e.g. Walk 8,000 steps"
         className="field mt-4"
         enterKeyHint="done"
@@ -81,6 +99,29 @@ export default function GoalSheet({ open, person, goal, onClose }) {
             </Chip>
           ))}
         </SheetRow>
+
+        {showWhen && (
+          <div>
+            <div className="mb-2 flex items-baseline justify-between">
+              <span className="eyebrow">When</span>
+              {guessed ? (
+                <span className="animate-rise text-xs font-semibold text-blue-deep">guessed from the title</span>
+              ) : (
+                !when && title.trim() && <span className="animate-rise text-xs text-ink-soft">When do you usually do this?</span>
+              )}
+            </div>
+            <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1">
+              {PERIODS.map((p) => (
+                <Chip key={p.id} active={when === p.id} onClick={() => pickWhen(p.id)}>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className={`h-2 w-2 rounded-full ${p.dot}`} />
+                    {p.label}
+                  </span>
+                </Chip>
+              ))}
+            </div>
+          </div>
+        )}
 
         {type === 'weekly' && (
           <SheetRow label="Times a week">
