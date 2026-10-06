@@ -3,7 +3,7 @@ import { useStore } from '../lib/store'
 import { doneOnDay, goalStreak, goalsOnDay, isComplete, weekCount } from '../lib/stats'
 import { burst } from '../lib/confetti'
 import { category } from '../lib/constants'
-import { fmt, todayKey, weekStart } from '../lib/dates'
+import { daysLabel, fmt, todayKey, weekStart } from '../lib/dates'
 import { ChevronIcon, PencilIcon, StreakIcon } from './Icons'
 import { CheerButton, CheerPills } from './Cheers'
 
@@ -117,6 +117,7 @@ export default function GoalItem({ goal, person, day = todayKey(), editing = fal
                   {streakLabel}
                 </span>
               )}
+              {daysLabel(goal.days) && <span className="text-ink-soft">· {daysLabel(goal.days)}</span>}
               {goal.owner === 'both' && (
                 <span className="rounded-full bg-pink-soft px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-ink">
                   Both

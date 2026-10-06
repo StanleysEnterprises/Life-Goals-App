@@ -4,6 +4,7 @@ import { CATEGORIES, PEOPLE, TYPES } from '../lib/constants'
 import { Chip } from './ui'
 import Sheet, { SheetRow } from './Sheet'
 import { PERIODS, guessPeriod } from '../lib/timeOfDay'
+import { DAY_LETTER, DAY_ORDER, DAY_SHORT } from '../lib/dates'
 
 // Add a new goal, or edit one (pass `goal`)
 export default function GoalSheet({ open, person, goal, onClose }) {
@@ -19,6 +20,7 @@ export default function GoalSheet({ open, person, goal, onClose }) {
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [when, setWhen] = useState(null) // morning | afternoon | evening | anytime
   const [whenPicked, setWhenPicked] = useState(false) // true once chosen by hand
+  const [days, setDays] = useState(null) // null = every day, else [0..6]
 
   useEffect(() => {
     if (!open) return
@@ -31,6 +33,7 @@ export default function GoalSheet({ open, person, goal, onClose }) {
     setConfirmDelete(false)
     setWhen(goal?.time_of_day ?? (goal ? guessPeriod(goal.title) : null))
     setWhenPicked(Boolean(goal?.time_of_day))
+    setDays(goal?.days?.length ? goal.days : null)
     if (!goal) {
       const t = setTimeout(() => input.current?.focus(), 300)
       return () => clearTimeout(t)
@@ -47,6 +50,13 @@ export default function GoalSheet({ open, person, goal, onClose }) {
     setWhenPicked(true)
   }
   const guessed = when && !whenPicked
+  const toggleDay = (d) =>
+    setDays((cur) => {
+      const set = new Set(cur ?? [0, 1, 2, 3, 4, 5, 6])
+      set.has(d) ? set.delete(d) : set.add(d)
+      const next = [...set].sort()
+      return next.length === 0 || next.length === 7 ? null : next
+    })
   const showWhen = type !== 'milestone'
 
   const pickOwner = (o) => {
@@ -66,6 +76,7 @@ export default function GoalSheet({ open, person, goal, onClose }) {
       target: type === 'weekly' ? target : null,
       due_date: type === 'milestone' && due ? due : null,
       time_of_day: type === 'milestone' ? null : when ?? 'anytime',
+      days: type === 'milestone' ? null : days,
     }
     if (editing) updateGoal(goal.id, fields)
     else addGoal(fields)
@@ -120,6 +131,43 @@ export default function GoalSheet({ open, person, goal, onClose }) {
                 </Chip>
               ))}
             </div>
+          </div>
+        )}
+
+        {showWhen && (
+          <div>
+            <div className="mb-2 flex items-baseline justify-between">
+              <span className="eyebrow">{type === 'weekly' ? 'Show on these days' : 'Days'}</span>
+              <button
+                type="button"
+                onClick={() => setDays(null)}
+                className={`text-xs font-semibold ${days ? 'text-blue-deep' : 'text-ink-soft'}`}
+              >
+                {days ? 'Every day' : 'Every day ✓'}
+              </button>
+            </div>
+            <div className="flex justify-between gap-1.5">
+              {DAY_ORDER.map((d) => {
+                const on = !days || days.includes(d)
+                return (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => toggleDay(d)}
+                    aria-pressed={on}
+                    aria-label={DAY_SHORT[d]}
+                    className={`grid h-10 w-10 place-items-center rounded-full text-sm font-bold transition duration-200 active:scale-90 ${
+                      on ? (days ? 'bg-ink text-canvas' : 'bg-blue-soft text-ink') : 'border border-line bg-surface text-ink-soft'
+                    }`}
+                  >
+                    {DAY_LETTER[d]}
+                  </button>
+                )
+              })}
+            </div>
+            {type === 'weekly' && days && (
+              <p className="mt-1.5 text-xs text-ink-soft">It’ll appear on Today on these days. You can still tick it any day from Goals.</p>
+            )}
           </div>
         )}
 

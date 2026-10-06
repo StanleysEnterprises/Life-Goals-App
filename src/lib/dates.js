@@ -63,3 +63,16 @@ export const monthDays = (m) => {
   return Array.from({ length: n }, (_, i) => `${m}-${pad(i + 1)}`)
 }
 export const monthName = (m, opts = { month: 'long' }) => fromKey(`${m}-01`).toLocaleDateString('en-AU', opts)
+
+// Day of week for a date key: 0 = Sunday … 6 = Saturday
+export const dow = (k) => fromKey(k).getDay()
+export const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0] // Mon → Sun
+export const DAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+export const DAY_LETTER = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+export const daysLabel = (days) => {
+  if (!days || days.length === 0 || days.length === 7) return null
+  const set = new Set(days)
+  if (set.size === 5 && [1, 2, 3, 4, 5].every((d) => set.has(d))) return 'Weekdays'
+  if (set.size === 2 && set.has(0) && set.has(6)) return 'Weekends'
+  return DAY_ORDER.filter((d) => set.has(d)).map((d) => DAY_SHORT[d]).join(' · ')
+}

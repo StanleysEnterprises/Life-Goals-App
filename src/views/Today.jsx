@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { useStore } from '../lib/store'
-import { activeGoalsFor, dailyRatio, doneOnDay, goalsOnDay, isComplete } from '../lib/stats'
+import { activeGoalsFor, dailyRatio, doneOnDay, goalsOnDay, isComplete, scheduledOn } from '../lib/stats'
 import { addDays, fmt, greeting, monthKey, monthName, prevMonth, todayKey } from '../lib/dates'
 import { promptFor, quoteFor } from '../lib/inspiration'
 import { PEOPLE } from '../lib/constants'
 import { PERSON_HEX, THEME } from '../lib/theme'
-import { PERIODS, currentPeriod, periodOf, periodOrder } from '../lib/timeOfDay'
+import { DAY_FLOW, PERIODS, currentPeriod, hasPassed, periodOf } from '../lib/timeOfDay'
+import { ChevronIcon } from '../components/Icons'
 import GoalItem from '../components/GoalItem'
 import { CheckinCard, checkinWeekFor } from '../components/Checkin'
 import { EmptyState, Section, SyncStatus } from '../components/ui'
@@ -27,7 +28,9 @@ export default function Today({ person, onAdd, onRecap }) {
     return () => clearInterval(id)
   }, [])
 
-  const goals = catchingUp ? goalsOnDay(data.goals, person, day) : activeGoalsFor(data.goals, person)
+  const goals = catchingUp
+    ? goalsOnDay(data.goals, person, day)
+    : activeGoalsFor(data.goals, person).filter((g) => g.type === 'milestone' || scheduledOn(g, day))
   const habits = goals.filter((g) => g.type !== 'milestone')
   const dailies = goals.filter((g) => g.type === 'daily')
   const milestones = catchingUp
@@ -43,7 +46,7 @@ export default function Today({ person, onAdd, onRecap }) {
   // A weekly goal counts as done for the day if it was ticked that day or the week's target is met
   const itemDone = (g) => doneOnDay(data.completions, g, person, day) || isComplete(g, person, data.completions, day)
 
-  const order = catchingUp ? ['morning', 'afternoon', 'evening', 'anytime'] : periodOrder(now)
+  const order = DAY_FLOW // always Morning → Afternoon → Evening → Anytime
   const sections = order
     .map((id) => ({ ...PERIODS.find((p) => p.id === id), goals: habits.filter((g) => periodOf(g) === id) }))
     .filter((s) => s.goals.length)
@@ -96,7 +99,7 @@ export default function Today({ person, onAdd, onRecap }) {
           person={person}
           day={day}
           isNow={!catchingUp && s.id === now}
-          collapsible={!catchingUp && s.id !== now}
+          passed={!catchingUp && hasPassed(s.id, now)}
           doneCount={s.goals.filter(itemDone).length}
         />
       ))}
@@ -214,21 +217,36 @@ function MiniRing({ value, color, label }) {
 }
 
 // ── A part of the day ──
-function PeriodSection({ section, person, day, isNow, collapsible, doneCount }) {
+// Once its time has passed (morning at 10am, afternoon at 5pm) it folds into a one-tap dropdown.
+function PeriodSection({ section, person, day, isNow, passed, doneCount }) {
   const total = section.goals.length
   const complete = doneCount === total
-  const [open, setOpen] = useState(!(collapsible && complete))
-  useEffect(() => {
-    if (collapsible && complete) setOpen(false)
-  }, [collapsible, complete])
+  const [open, setOpen] = useState(!passed)
+  useEffect(() => setOpen(!passed), [passed])
+
+  if (!open)
+    return (
+      <section>
+        <button
+          onClick={() => setOpen(true)}
+          aria-expanded="false"
+          className="flex w-full items-center gap-2.5 rounded-2xl border border-line bg-surface px-4 py-3 text-left transition active:scale-[0.98]"
+        >
+          <span className={`h-2.5 w-2.5 rounded-full ${section.dot}`} />
+          <span className="text-sm font-semibold text-ink">{section.label}</span>
+          <span className={`ml-auto text-xs font-semibold ${complete ? 'text-ink' : 'text-ink-soft'}`}>
+            {complete ? '✓ all done' : `${doneCount} of ${total} done`}
+          </span>
+          <span className="text-ink-soft">
+            <ChevronIcon dir="down" />
+          </span>
+        </button>
+      </section>
+    )
 
   return (
     <section>
-      <button
-        onClick={() => collapsible && setOpen((o) => !o)}
-        aria-expanded={open}
-        className="mb-3 flex w-full items-center gap-2 text-left"
-      >
+      <button onClick={() => setOpen(false)} aria-expanded="true" className="mb-3 flex w-full items-center gap-2 text-left">
         <span className={`h-2.5 w-2.5 rounded-full ${section.dot}`} />
         <span className="eyebrow">{section.label}</span>
         {isNow && <span className="rounded-full bg-ink px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-canvas">Now</span>}
@@ -236,21 +254,15 @@ function PeriodSection({ section, person, day, isNow, collapsible, doneCount }) 
           {complete ? '✓ ' : ''}
           {doneCount} of {total}
         </span>
+        <span className="text-ink-soft">
+          <ChevronIcon dir="up" />
+        </span>
       </button>
-      {open ? (
-        <ul className="animate-rise space-y-2.5">
-          {section.goals.map((g) => (
-            <GoalItem key={g.id} goal={g} person={person} day={day} />
-          ))}
-        </ul>
-      ) : (
-        <button
-          onClick={() => setOpen(true)}
-          className="w-full rounded-2xl border border-dashed border-line px-4 py-3 text-left text-sm text-ink-soft"
-        >
-          All done — tap to see
-        </button>
-      )}
+      <ul className="animate-rise space-y-2.5">
+        {section.goals.map((g) => (
+          <GoalItem key={g.id} goal={g} person={person} day={day} />
+        ))}
+      </ul>
     </section>
   )
 }

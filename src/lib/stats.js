@@ -1,4 +1,4 @@
-import { addDays, createdKey, monthDays, todayKey, weekDays, weekStart } from './dates'
+import { addDays, createdKey, dow, monthDays, todayKey, weekDays, weekStart } from './dates'
 
 const ownedBy = (g, person) => g.owner === person || g.owner === 'both'
 // `archived` = removed by the old version of the app; treated as deleted
@@ -6,6 +6,9 @@ const exists = (g) => !g.archived
 
 const sortKey = (g) => g.sort_order ?? new Date(g.created_at).getTime()
 export const byOrder = (a, b) => sortKey(a) - sortKey(b)
+
+// Is this goal on for that day? (no days chosen = every day)
+export const scheduledOn = (g, day) => !g.days || g.days.length === 0 || g.days.includes(dow(day))
 
 // Goals you're working on right now
 export const activeGoalsFor = (goals, person) =>
@@ -19,7 +22,12 @@ export const retiredGoalsFor = (goals, person) =>
 export const goalsOnDay = (goals, person, day) =>
   goals
     .filter(
-      (g) => exists(g) && ownedBy(g, person) && createdKey(g.created_at) <= day && (!g.retired_on || day < g.retired_on),
+      (g) =>
+        exists(g) &&
+        ownedBy(g, person) &&
+        createdKey(g.created_at) <= day &&
+        (!g.retired_on || day < g.retired_on) &&
+        scheduledOn(g, day),
     )
     .sort(byOrder)
 
@@ -52,9 +60,10 @@ export const dailyRatio = (goals, completions, person, day) => {
 export const streak = (goals, completions, person, today = todayKey()) => {
   let day = dailyRatio(goals, completions, person, today) === 1 ? today : addDays(today, -1)
   let n = 0
-  for (let i = 0; i < 730; i++) {
-    if (dailyRatio(goals, completions, person, day) !== 1) break
-    n++
+  for (let i = 0; i < 400; i++) {
+    const r = dailyRatio(goals, completions, person, day)
+    if (r === 1) n++
+    else if (r !== null) break // a day with habits on, not all done
     day = addDays(day, -1)
   }
   return n
@@ -64,11 +73,13 @@ export const streak = (goals, completions, person, today = todayKey()) => {
 export const goalStreak = (goal, person, completions, today = todayKey()) => {
   const done = new Set(mine(completions, goal.id, person).map((c) => c.day))
   if (goal.type === 'daily') {
-    let day = done.has(today) ? today : addDays(today, -1)
+    const start = createdKey(goal.created_at)
+    let day = today
     let n = 0
-    while (done.has(day) && n < 3650) {
-      n++
-      day = addDays(day, -1)
+    for (let i = 0; i < 800 && day >= start; i++, day = addDays(day, -1)) {
+      if (!scheduledOn(goal, day)) continue
+      if (done.has(day)) n++
+      else if (day !== today) break // today isn't over yet
     }
     return n
   }
@@ -151,7 +162,7 @@ export const monthRecap = (data, person, month) => {
   // Most consistent daily habit (highest share of its live days ticked)
   let top = null
   for (const g of goals.filter((g) => exists(g) && ownedBy(g, person) && g.type === 'daily')) {
-    const live = days.filter((d) => createdKey(g.created_at) <= d && (!g.retired_on || d < g.retired_on))
+    const live = days.filter((d) => createdKey(g.created_at) <= d && (!g.retired_on || d < g.retired_on) && scheduledOn(g, d))
     if (live.length < 3) continue
     const hit = live.filter((d) => doneOnDay(completions, g, person, d)).length
     const rate = hit / live.length

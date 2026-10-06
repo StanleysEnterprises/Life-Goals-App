@@ -13,6 +13,7 @@ export default async function handler(req, res) {
   try {
     const supabase = db()
     const today = todayInAppTz()
+    const weekday = new Date(`${today}T12:00:00Z`).getUTCDay()
     const [{ data: goals, error: e1 }, { data: done, error: e2 }] = await Promise.all([
       supabase.from('goals').select('*'),
       supabase.from('completions').select('goal_id, person').eq('day', today),
@@ -27,7 +28,8 @@ export default async function handler(req, res) {
           !g.retired_on &&
           g.type === 'daily' &&
           (g.owner === person || g.owner === 'both') &&
-          createdDay(g.created_at) <= today,
+          createdDay(g.created_at) <= today &&
+          (!g.days || g.days.length === 0 || g.days.includes(weekday)),
       )
       const left = dailies.filter((g) => !done.some((c) => c.goal_id === g.id && c.person === person))
       if (!dailies.length || !left.length) {

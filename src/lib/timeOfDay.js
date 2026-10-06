@@ -11,9 +11,19 @@ export const periodLabel = (id) => PERIODS.find((p) => p.id === id)?.label ?? 'A
 // Which part of the day it is now
 export const currentPeriod = (d = new Date()) => {
   const h = d.getHours()
-  if (h >= 4 && h < 12) return 'morning'
-  if (h >= 12 && h < 17) return 'afternoon'
+  if (h >= 4 && h < 10) return 'morning'
+  if (h >= 10 && h < 17) return 'afternoon'
   return 'evening'
+}
+
+// Top to bottom on the Today screen
+export const DAY_FLOW = ['morning', 'afternoon', 'evening', 'anytime']
+
+// A part of the day has "passed" once the clock moves beyond it (morning at 10am, afternoon at 5pm)
+export const hasPassed = (period, now) => {
+  const seq = ['morning', 'afternoon', 'evening']
+  if (period === 'anytime') return false
+  return seq.indexOf(period) < seq.indexOf(now)
 }
 
 // Order: now first, then what's still to come, then anytime, then what's already passed
